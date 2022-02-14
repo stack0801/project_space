@@ -45,6 +45,14 @@ const user_schema = new mongoose.Schema({
     password: {
         type: String,
         required: true
+    }
+})
+
+const object_schema = new mongoose.Schema({
+    id: {
+        type: String,
+        required: true,
+        unique: true
     },
     x: {
         type: Number,
@@ -53,12 +61,18 @@ const user_schema = new mongoose.Schema({
     y: {
         type: Number,
         default: 0
+    },
+    dx: {
+        type: Number,
+        default: 0
+    },
+    dy: {
+        type: Number,
+        default: 0
     }
-
 })
 
-const user_model = mongoose.model('s_users', user_schema)
-
 module.exports = {
-    S_user : user_model
+    S_user : mongoose.model('S_users', user_schema),
+    S_object : mongoose.model('S_object', object_schema)
 }

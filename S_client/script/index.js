@@ -24,6 +24,18 @@ window.addEventListener('keydown', e => {
                 message_input.focus()
             }
             break;
+        case 'w' :
+            socket.emit('order', 'w');
+            break;
+        case 'a' :
+            socket.emit('order', 'a');
+            break;
+        case 's' :
+            socket.emit('order', 's');
+            break;
+        case 'd' :
+            socket.emit('order', 'd');
+            break;
         default:
             console.log(e.key);
     }

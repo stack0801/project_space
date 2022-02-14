@@ -11,14 +11,16 @@ S_store.on('error', function(error) {
     console.log(error)
 })
 
-module.exports = (app) => {
-    app.use(express_session({
-        secret: process.env.session_secret,
-        cookie: {
-            maxAge: 1000 * 60 * 60 * 24 * 1 // 1 day
-        },
-        store : S_store,
-        resave: true,
-        saveUninitialized: true
-    }))
+const sessionMiddleware = express_session({
+    secret: process.env.session_secret,
+    cookie: {
+        maxAge: 1000 * 60 * 60 * 24 * 1 // 1 day
+    },
+    store : S_store,
+    resave: true,
+    saveUninitialized: true
+})
+
+module.exports = {
+    s_middleware : sessionMiddleware
 }
