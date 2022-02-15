@@ -62,11 +62,19 @@ const object_schema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    a: {
+        type: Number,
+        default: 0
+    },
     dx: {
         type: Number,
         default: 0
     },
     dy: {
+        type: Number,
+        default: 0
+    },
+    da: {
         type: Number,
         default: 0
     }

@@ -69,20 +69,18 @@ io.on('connection', (socket) => {
     socket.on('order', async (msg) => {
         const target = await S_DB.S_object.find({ id : socket.request.session.Auth });
 
-        console.log(target[0])
-
         switch (msg) {
             case 'w' :
-                target[0].dy--
+                target[0].dy -= 5
                 break
             case 'a' :
-                target[0].dx--
+                target[0].dx -= 5
                 break;
             case 's' :
-                target[0].dy++
+                target[0].dy += 5
                 break;
             case 'd' :
-                target[0].dx++
+                target[0].dx += 5
                 break;
         }
 

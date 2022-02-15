@@ -62,13 +62,16 @@ socket.on('chat message', (msg) => {
 socket.on('location', (data) => {
     ctx.clearRect(0, 0, S_canvas.width, S_canvas.height);
     for (var value of data) {
+
+        const cx = S_canvas.width / 2 + value.x * S_canvas.width / 20000
+        const cy = S_canvas.height / 2 + value.y * S_canvas.width / 20000
+
         ctx.beginPath();
-        ctx.arc(S_canvas.width / 2 + value.x, 
-            S_canvas.height / 2 + value.y, 
-            10, 0, Math.PI*2
-        );
+        ctx.arc(cx, cy, 10, 0, Math.PI*2);
         ctx.fillStyle = '#000000';
         ctx.fill();
         ctx.closePath();
+
+        ctx.fillText(value.id, cx, cy + 20)
     }
 });
