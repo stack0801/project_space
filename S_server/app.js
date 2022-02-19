@@ -11,13 +11,10 @@ const S_session = require('./src/S_session')
 
 let interval
 
-    // register middleware in Express
-app.use(S_session.s_middleware);
-    // register middleware in Socket.IO 
+app.use(S_session.s_middleware)
+
 io.use((socket, next) => {
     S_session.s_middleware(socket.request, {}, next);
-    // sessionMiddleware(socket.request, socket.request.res, next); will not work with websocket-only
-    // connections, as 'socket.request.res' will be undefined in that case
 });
 
 app.use(express.urlencoded({ extended: true }))
@@ -31,6 +28,11 @@ app.get('', (req, res) => {
     else {
         res.sendFile('/login.html', {root : 'S_client/html'})
     }
+})
+
+//test
+app.get('/matter', (req, res) => {
+    res.sendFile('/matter.html', {root : 'S_client/html'})
 })
 
 const connect = async (req, res) => {
@@ -67,7 +69,7 @@ io.on('connection', (socket) => {
     })
 
     socket.on('order', async (msg) => {
-        const target = await S_DB.S_object.find({ id : socket.request.session.Auth });
+        const target = await S_DB.S_object.find({ id : socket.request.session.Auth })
 
         switch (msg) {
             case 'w' :
