@@ -1,29 +1,56 @@
+var Engine = Matter.Engine,
+    Render = Matter.Render,
+    Runner = Matter.Runner,
+    Bodies = Matter.Bodies,
+    Composite = Matter.Composite,
+    Events = Matter.Events,
+    Body = Matter.Body;
+
+var window_width = window.innerWidth;
+var window_height = window.innerHeight;
+
+var engine = Engine.create();
+var world = engine.world;
+
+engine.gravity.y = 0;
+
+var render = Render.create({
+    element: document.body,
+    options: {
+        width: window_width,
+        height: window_height
+    },
+    engine: engine
+});
+
+Render.run(render);
+var runner = Runner.create();
+Runner.run(runner, engine);
+
+var i = Bodies.rectangle(400, 600, 800, 50.5);
+
+Composite.add(world, [
+    i
+]);
+
+var Mouse = Matter.Mouse;
+var MouseConstraint = Matter.MouseConstraint;
+var mouse = Mouse.create(render.canvas),
+mouseConstraint = MouseConstraint.create(engine, {
+    mouse: mouse,
+    constraint: {
+        stiffness: 0.2,
+        render: {
+            visible: false
+        }
+    }
+});
+Composite.add(world, mouseConstraint);
+
 var socket = io();
-
-var message_bar = document.getElementById('message_bar');
-var message_log = document.getElementById('message_log');
-var message_input = document.getElementById('message_input');
-var message_button = document.getElementById('message_button');
-
-var S_canvas = document.getElementById('S_canvas');
-var ctx = S_canvas.getContext('2d');
-
-ctx.canvas.width  = window.innerWidth;
-ctx.canvas.height = window.innerHeight;
-
-console.log("!!!!")
 
 window.addEventListener('keydown', e => {
     switch (e.key) {
-        case 'Insert':
-            if(message_bar.style.display == 'flex')
-                message_bar.style.display = 'none'
-            else
-            {
-                message_bar.style.display = 'flex'
-                message_input.focus()
-            }
-            break;
         case 'w' :
             socket.emit('order', 'w');
             break;
@@ -36,6 +63,9 @@ window.addEventListener('keydown', e => {
         case 'd' :
             socket.emit('order', 'd');
             break;
+        case 'e' :
+            console.log(Composite.allBodies(world))
+            break;
         default:
             console.log(e.key);
     }
@@ -45,33 +75,26 @@ window.addEventListener('keyup', e => {
     
 })
 
-message_button.addEventListener('click', () => {
-    if (message_input.value) {
-        socket.emit('chat message', message_input.value);
-        message_input.value = '';
-    }
-});
-
-socket.on('chat message', (msg) => {
-    const item = document.createElement('li');
-    item.textContent = msg;
-    message_log.appendChild(item);
-    window.scrollTo(0, document.body.scrollHeight);
-});
+var buff;
 
 socket.on('location', (data) => {
-    ctx.clearRect(0, 0, S_canvas.width, S_canvas.height);
     for (var value of data) {
-
-        const cx = S_canvas.width / 2 + value.x * S_canvas.width / 20000
-        const cy = S_canvas.height / 2 + value.y * S_canvas.width / 20000
-
-        ctx.beginPath();
-        ctx.arc(cx, cy, 10, 0, Math.PI*2);
-        ctx.fillStyle = '#000000';
-        ctx.fill();
-        ctx.closePath();
-
-        ctx.fillText(value.id, cx, cy + 20)
+        buff = Composite.get(world, value.id, 'body')
+        if(buff != null) {
+            Body.setPosition(buff, { x: value.x, y: value.y });
+            Body.setVelocity(buff, { x: value.dx, y: value.dy });
+        }
+        else {
+            var new_object = Bodies.fromVertices(value.x, value.y, value.Vertices, {}, true);
+            new_object.id = value.id;
+            Composite.add(world, new_object);
+        }
     }
 });
+
+/*
+Events.on(engine, 'afterUpdate', function(event) {
+    var time = engine.timing.timestamp;
+    console.log(time)
+});
+*/

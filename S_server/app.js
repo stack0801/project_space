@@ -8,6 +8,7 @@ const io = new Server(server)
 
 const S_DB = require('./src/S_DB')
 const S_session = require('./src/S_session')
+const S_matter = require('./clock')
 
 let interval
 
@@ -41,9 +42,23 @@ const connect = async (req, res) => {
     if(result.length == 0) {
         const new_user = new S_DB.S_user({ id: req.body.id, password: req.body.pw })
         const new_object = new S_DB.S_object({ id: req.body.id })
+        new_object.Vertices = [
+            { x: 10, y: 0 }, 
+            { x: 20, y: 0 }, 
+            { x: 30, y: 10 }, 
+            { x: 30, y: 20 }, 
+            { x: 20, y: 30 }, 
+            { x: 10, y: 30 },
+            { x: 0, y: 20 }, 
+            { x: 0, y: 10 }
+        ]
 
         await new_user.save()
         await new_object.save()
+
+        const new_object2 = S_matter.S_Bodies.fromVertices(0, 0, new_object.Vertices, {}, true);
+        new_object2.id = req.body.id;
+        S_matter.S_Composite.add(S_matter.S_world, new_object2);
     }
 
     req.session.Auth = req.body.id
@@ -56,7 +71,7 @@ app.post('/connect', (req, res) => {
 
 io.on('connection', (socket) => {
     console.log('a user connected')
-    interval = setInterval(() => {send()}, 30)
+    interval = setInterval(() => {send()}, 100)
 
     socket.on('disconnect', () => {
         console.log('user disconnected')
@@ -71,18 +86,36 @@ io.on('connection', (socket) => {
     socket.on('order', async (msg) => {
         const target = await S_DB.S_object.find({ id : socket.request.session.Auth })
 
+        const body = S_matter.S_Composite.get(S_matter.S_world, socket.request.session.Auth, 'body')
+
         switch (msg) {
             case 'w' :
-                target[0].dy -= 5
+                //target[0].dy -= 5
+                S_matter.S_Body.applyForce(body, body.position, { 
+                    x: 0, 
+                    y: -0.0001
+                });
                 break
             case 'a' :
-                target[0].dx -= 5
+                //target[0].dx -= 5
+                S_matter.S_Body.applyForce(body, body.position, { 
+                    x: -0.0001, 
+                    y: 0
+                });
                 break;
             case 's' :
-                target[0].dy += 5
+                //target[0].dy += 5
+                S_matter.S_Body.applyForce(body, body.position, { 
+                    x: 0, 
+                    y: 0.0001
+                });
                 break;
             case 'd' :
-                target[0].dx += 5
+                //target[0].dx += 5
+                S_matter.S_Body.applyForce(body, body.position, { 
+                    x: 0.0001, 
+                    y: 0
+                });
                 break;
         }
 

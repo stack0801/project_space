@@ -1,0 +1,66 @@
+html, body {
+    margin: 0;
+    height: 100%;
+    background: rgb(0, 0, 0);
+}
+
+canvas {
+    width: 100%;
+    height: 100%;
+    background: rgb(243, 243, 243);
+}
+
+#message_bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 30%;
+    display: none;
+    background: rgba(0, 0, 0, 0.15);
+}
+
+#message_bar > div {
+
+    border-top: dashed 3px rgb(0, 0, 0);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0; 
+    display: flex;
+    height: 2.5rem; 
+
+    padding: 0.25rem;
+}
+
+#message_input {
+    border: none;
+    background: transparent;
+    padding: 0 1rem;
+    flex-grow: 1;
+}
+
+#message_button {
+    background: #333;
+    border: none;
+    padding: 0 1rem;
+    border-radius: 3px;
+    outline: none;
+    color: #fff;
+}
+
+#message_log {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+#message_log > li {
+    padding: 0.5rem 1rem;
+}
+
+#message_log > li:nth-child(odd) {
+    background: #efefef;
+}
+
+input:focus {outline:none;}

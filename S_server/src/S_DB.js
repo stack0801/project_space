@@ -1,3 +1,4 @@
+const { Vertices } = require('matter-js')
 const mongoose = require('mongoose')
 require('dotenv').config()
 
@@ -77,7 +78,8 @@ const object_schema = new mongoose.Schema({
     da: {
         type: Number,
         default: 0
-    }
+    },
+    Vertices: []
 })
 
 module.exports = {
