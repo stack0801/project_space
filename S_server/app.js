@@ -8,9 +8,7 @@ const io = new Server(server)
 
 const S_DB = require('./src/S_DB')
 const S_session = require('./src/S_session')
-const S_matter = require('./clock')
-
-let interval
+const S_matter = require('./src/S_matter')
 
 app.use(S_session.s_middleware)
 
@@ -31,12 +29,8 @@ app.get('', (req, res) => {
     }
 })
 
-//test
-app.get('/matter', (req, res) => {
-    res.sendFile('/matter.html', {root : 'S_client/html'})
-})
+app.post('/connect', async (req, res) => {
 
-const connect = async (req, res) => {
     const result = await S_DB.S_user.find({id : req.body.id, pw : req.body.pw})
 
     if(result.length == 0) {
@@ -52,7 +46,6 @@ const connect = async (req, res) => {
             { x: 0, y: 20 }, 
             { x: 0, y: 10 }
         ]
-
         await new_user.save()
         await new_object.save()
 
@@ -63,19 +56,48 @@ const connect = async (req, res) => {
 
     req.session.Auth = req.body.id
     res.redirect("/")
-}
-
-app.post('/connect', (req, res) => {
-    connect(req, res).catch(err => console.log(err))
 })
+
+let interval = setInterval(() => {send()}, 1000)
+
+
+async function send() {
+    //const list = await S_DB.S_object.find()
+    const list = S_matter.S_Composite.allBodies(S_matter.S_world)
+
+    let data = []
+
+    for(let o of list) {
+
+
+        data.push({
+            id : o.id,
+            x : o.position.x,
+            y : o.position.y,
+            dx : o.velocity.x,
+            dy : o.velocity.y,
+            vertices : [
+                { x: 10, y: 0 }, 
+                { x: 20, y: 0 }, 
+                { x: 30, y: 10 }, 
+                { x: 30, y: 20 }, 
+                { x: 20, y: 30 }, 
+                { x: 10, y: 30 },
+                { x: 0, y: 20 }, 
+                { x: 0, y: 10 }
+            ]
+        })
+        
+    }
+
+    io.emit('location', data)
+}
 
 io.on('connection', (socket) => {
     console.log('a user connected')
-    interval = setInterval(() => {send()}, 100)
 
     socket.on('disconnect', () => {
         console.log('user disconnected')
-        clearInterval(interval)
     })
 
     socket.on('chat message', (msg) => {
@@ -84,49 +106,37 @@ io.on('connection', (socket) => {
     })
 
     socket.on('order', async (msg) => {
-        const target = await S_DB.S_object.find({ id : socket.request.session.Auth })
 
         const body = S_matter.S_Composite.get(S_matter.S_world, socket.request.session.Auth, 'body')
 
         switch (msg) {
             case 'w' :
-                //target[0].dy -= 5
                 S_matter.S_Body.applyForce(body, body.position, { 
                     x: 0, 
                     y: -0.0001
                 });
                 break
             case 'a' :
-                //target[0].dx -= 5
                 S_matter.S_Body.applyForce(body, body.position, { 
                     x: -0.0001, 
                     y: 0
                 });
                 break;
             case 's' :
-                //target[0].dy += 5
                 S_matter.S_Body.applyForce(body, body.position, { 
                     x: 0, 
                     y: 0.0001
                 });
                 break;
             case 'd' :
-                //target[0].dx += 5
                 S_matter.S_Body.applyForce(body, body.position, { 
                     x: 0.0001, 
                     y: 0
                 });
                 break;
         }
-
-        target[0].save()
     })
 })
-
-async function send() {
-    const list = await S_DB.S_object.find()
-    io.emit('location', list)
-}
 
 server.listen(3000, () => {
     console.log(`server started listening on port ...!`)

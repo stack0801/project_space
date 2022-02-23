@@ -12,6 +12,7 @@ var window_height = window.innerHeight;
 var engine = Engine.create();
 var world = engine.world;
 
+Engine.update(engine, [delta=16.666], [correction=1])
 engine.gravity.y = 0;
 
 var render = Render.create({
@@ -83,9 +84,10 @@ socket.on('location', (data) => {
         if(buff != null) {
             Body.setPosition(buff, { x: value.x, y: value.y });
             Body.setVelocity(buff, { x: value.dx, y: value.dy });
+            console.log(value)
         }
         else {
-            var new_object = Bodies.fromVertices(value.x, value.y, value.Vertices, {}, true);
+            var new_object = Bodies.fromVertices(value.x, value.y, value.vertices, {}, true);
             new_object.id = value.id;
             Composite.add(world, new_object);
         }
