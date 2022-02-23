@@ -37,14 +37,10 @@ app.post('/connect', async (req, res) => {
         const new_user = new S_DB.S_user({ id: req.body.id, password: req.body.pw })
         const new_object = new S_DB.S_object({ id: req.body.id })
         new_object.Vertices = [
-            { x: 10, y: 0 }, 
-            { x: 20, y: 0 }, 
-            { x: 30, y: 10 }, 
-            { x: 30, y: 20 }, 
-            { x: 20, y: 30 }, 
-            { x: 10, y: 30 },
-            { x: 0, y: 20 }, 
-            { x: 0, y: 10 }
+            { x: 0, y: 0 }, 
+            { x: 30, y: 0 }, 
+            { x: 30, y: 30 }, 
+            { x: 0, y: 30 }
         ]
         await new_user.save()
         await new_object.save()
@@ -58,38 +54,32 @@ app.post('/connect', async (req, res) => {
     res.redirect("/")
 })
 
-let interval = setInterval(() => {send()}, 1000)
+let interval = setInterval(() => {send()}, 30)
 
 
 async function send() {
     //const list = await S_DB.S_object.find()
     const list = S_matter.S_Composite.allBodies(S_matter.S_world)
-
     let data = []
 
     for(let o of list) {
-
-
         data.push({
             id : o.id,
             x : o.position.x,
             y : o.position.y,
+            a : o.angle,
             dx : o.velocity.x,
             dy : o.velocity.y,
+            da : o.angularVelocity,
             vertices : [
-                { x: 10, y: 0 }, 
-                { x: 20, y: 0 }, 
-                { x: 30, y: 10 }, 
-                { x: 30, y: 20 }, 
-                { x: 20, y: 30 }, 
-                { x: 10, y: 30 },
-                { x: 0, y: 20 }, 
-                { x: 0, y: 10 }
+                { x: 0, y: 0 }, 
+                { x: 30, y: 0 }, 
+                { x: 30, y: 30 }, 
+                { x: 0, y: 30 }
             ]
         })
         
     }
-
     io.emit('location', data)
 }
 
@@ -113,24 +103,24 @@ io.on('connection', (socket) => {
             case 'w' :
                 S_matter.S_Body.applyForce(body, body.position, { 
                     x: 0, 
-                    y: -0.0001
+                    y: -0.0003
                 });
                 break
             case 'a' :
                 S_matter.S_Body.applyForce(body, body.position, { 
-                    x: -0.0001, 
+                    x: -0.0003, 
                     y: 0
                 });
                 break;
             case 's' :
                 S_matter.S_Body.applyForce(body, body.position, { 
                     x: 0, 
-                    y: 0.0001
+                    y: 0.0003
                 });
                 break;
             case 'd' :
                 S_matter.S_Body.applyForce(body, body.position, { 
-                    x: 0.0001, 
+                    x: 0.0003, 
                     y: 0
                 });
                 break;

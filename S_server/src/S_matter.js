@@ -5,6 +5,7 @@ var Engine = Matter.Engine,
     Runner = Matter.Runner,
     Bodies = Matter.Bodies,
     Composite = Matter.Composite,
+    Events = Matter.Events,
     Body = Matter.Body;
 
 var engine = Engine.create();
@@ -28,9 +29,20 @@ get_all()
 var runner = Runner.create();
 Runner.run(runner, engine);
 
-/*
+
 Events.on(engine, 'afterUpdate', async(event) => {
 
+    const list = Composite.allBodies(world)
+    let data = []
+    for(let o of list) {
+        if(o.position.x > 1500 || o.position.x < -10 || o.position.y > 1000 || o.position.y < -10) {
+            o.position.x = 400
+            o.position.y = 400
+            Body.setVelocity(o, { x: 0, y: 0})
+        }
+    }
+
+    /*
     const list = Composite.allBodies(world)
     let buff
 
@@ -48,8 +60,9 @@ Events.on(engine, 'afterUpdate', async(event) => {
 
     var time = engine.timing.timestamp;
     console.log(time)
+    */
 });
-*/
+
 
 module.exports = {
     S_Composite : Composite,
