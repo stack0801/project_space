@@ -1,0 +1,33 @@
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>WebSocket Example</title>
+</head>
+<body>
+  <h1>WebSocket Example</h1>
+  <div id="data"></div>
+  
+  <script>
+    const ws = new WebSocket(`ws://${location.host}`);
+
+    ws.onopen = () => {
+      console.log('Connected to WebSocket server');
+    };
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      document.getElementById('data').innerText = `Timestamp: ${new Date(data.timestamp).toLocaleTimeString()}, Value: ${data.value.toFixed(2)}`;
+    };
+
+    ws.onclose = () => {
+      console.log('Disconnected from WebSocket server');
+    };
+
+    ws.onerror = (error) => {
+      console.error(`WebSocket error: ${error}`);
+    };
+  </script>
+</body>
+</html>
