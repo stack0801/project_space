@@ -10,12 +10,12 @@ interface PointXYR {
 }
 
 class Entity {
-    vertices: PointXY[]; // 점들의 배열
-    position: PointXYR; // 위치 {x, y, r}
-    velocity?: PointXYR; // 속도 {x, y, r}
-    mass?: number; // 무게
-    centroid?: PointXY; // 질량 중심 {x, y}
-    health?: number; // 체력
+    vertices: PointXY[]; // 점들의 배열 [{x, y}, ...] ( 정수 0 < x, y < 4,294,967,295 )
+    position: PointXYR; // 위치 {x, y, r} ( 0 < x, y < 4,294,967,295, 0 < r < 6.28319 )
+    velocity?: PointXYR; // 속도 {x, y, r} ( -100 < x, y < 100, -6.28319 < r < 6.28319 )
+    mass?: number; // 무게 ( 0 < mass < 1000 )
+    centroid?: PointXY; // 질량 중심 {x, y} ( 정수 0 < x, y < 10000 )
+    health?: number; // 체력 ( 0 < health < 10000 )
 
     constructor(
         vertices: PointXY[],
@@ -80,3 +80,5 @@ class Entity {
         console.log(`Vertices: ${JSON.stringify(this.vertices)}`);
     }
 }
+
+export { Entity, PointXY, PointXYR };
