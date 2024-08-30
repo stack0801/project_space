@@ -1,21 +1,47 @@
+// MAX_UINT32 = 4294967295; // 32비트 무부호 정수의 최대값
+// PI = 3.14159; // π, 라디안 값
+// MAX_VELOCITY_XY = 100000; // x, y 좌표에 대한 속도의 최대 절대값
+// MAX_VELOCITY_R = PI / 2; // r (회전)에 대한 속도의 최대 절대값 (90도, π/2 라디안)
+// MAX_MASS = 100000; // 무게의 최대값
+// MAX_HEALTH = 100000; // 체력의 최대값
+
 interface PointXY {
-    x: number;
-    y: number;
+    x: number; // 자연수 0 <= x < MAX_UINT32
+    y: number; // 자연수 0 <= y < MAX_UINT32
 }
 
 interface PointXYR {
-    x: number;
-    y: number;
-    r: number;
+    x: number; // 자연수 0 <= x < MAX_UINT32
+    y: number; // 자연수 0 <= y < MAX_UINT32
+    r: number; // 소수(5자리) - 2 * PI < r < 2 * PI
 }
 
 class Entity {
-    vertices: PointXY[]; // 점들의 배열 [{x, y}, ...] ( 정수 0 < x, y < 4,294,967,295 )
-    position: PointXYR; // 위치 {x, y, r} ( 0 < x, y < 4,294,967,295, 0 < r < 6.28319 )
-    velocity?: PointXYR; // 속도 {x, y, r} ( -100 < x, y < 100, -6.28319 < r < 6.28319 )
-    mass?: number; // 무게 ( 0 < mass < 1000 )
-    centroid?: PointXY; // 질량 중심 {x, y} ( 정수 0 < x, y < 10000 )
-    health?: number; // 체력 ( 0 < health < 10000 )
+    vertices: PointXY[];
+    // 점들의 배열 [{x, y}, ...]
+    //  자연수 0 <= x, y < MAX_UINT32
+
+    position: PointXYR;
+    // 위치 {x, y, r}
+    //  자연수 0 <= x, y < MAX_UINT32
+    //  소수 (5자리) 0 <= r < 2 * PI
+
+    velocity?: PointXYR;
+    // 속도 {x, y, r}
+    //  정수 -MAX_VELOCITY_XY < x, y < MAX_VELOCITY_XY
+    //  소수 (5자리) -MAX_VELOCITY_R < r < MAX_VELOCITY_R
+
+    mass?: number;
+    // 무게
+    //  자연수 0 < mass < MAX_MASS
+
+    centroid?: PointXY;
+    // 질량 중심 {x, y}
+    //  자연수 0 <= x, y < MAX_UINT32
+
+    health?: number;
+    // 체력
+    //  자연수 0 < health < MAX_HEALTH
 
     constructor(
         vertices: PointXY[],
